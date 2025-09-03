@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ملاذ الدراسة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        :root {
+            --primary-color: #4a6572;
+            --secondary-color: #f9aa33;
+            --text-color: #ffffff;
+            --bg-overlay: rgba(0, 0, 0, 0.4);
+            --transition: all 0.4s ease;
+        }
+
+        body {
+            height: 100vh;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            transition: background-image 1.5s ease-in-out;
+            position: relative;
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.2);
+            z-index: -1;
+        }
+        
+        /* العناصر الرئيسية */
+        .main-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        /* عناصر الواجهة الموحدة */
+        .styled-container {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: background 0.5s ease;
+        }
+
+        .styled-container.no-bg {
+            background: transparent;
+            backdrop-filter: none;
+            box-shadow: none;
+            border: none;
+        }
+
+        /* الساعة والتاريخ */
+        .datetime-container {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            font-size: 0.9rem;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            transition: all 0.5s ease;
+        }
+        
+        .datetime-container.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .datetime-container .time {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .datetime-container .date {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            margin-top: -5px;
+        }
+
+        /* المؤقت */
+        .timer-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative; /* Changed to relative for centering */
+            transform: none; /* Reset transform */
+            z-index: 5;
+            transition: all 0.5s ease;
+        }
+
+        .timer-container.hidden-controls .timer-buttons {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(20px);
+        }
+        
+        .timer-display {
+            font-size: 5rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            font-variant-numeric: tabular-nums;
+            margin-bottom: 20px;
+            text-shadow: 0 3px 12px rgba(0, 0, 0, 0.5);
+            cursor: pointer;
+        }
+
+        .timer-status {
+            font-size: 1.8rem;
+            opacity: 0.9;
+        }
+        
+        .timer-buttons {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        
+        .timer-buttons button {
+            background: var(--secondary-color);
+            color: var(--text-color);
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .timer-buttons button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        /* الإعدادات */
+        .settings-btn {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 20;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: var(--transition);
+        }
+
+        .settings-btn.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .settings-btn:hover {
+            background: rgba(0, 0, 0, 0.6);
+            transform: rotate(30deg) scale(1.1);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .settings-panel {
+            position: absolute;
+            top: 100px;
+            right: 30px;
+            width: 400px;
+            background: rgba(0, 0, 0, 0.85);
+            border-radius: 25px;
+            padding: 30px;
+            z-index: 30;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transform: translateX(150%);
+            transition: transform 0.5s ease, opacity 0.5s ease;
+            max-height: 80vh;
+            overflow-y: auto;
+            opacity: 0;
+        }
+
+        .settings-panel.active {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .settings-panel h2 {
+            font-size: 2rem;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .settings-section {
+            margin-bottom: 28px;
+        }
+
+        .settings-section h3 {
+            font-size: 1.4rem;
+            margin-bottom: 18px;
+            color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .settings-section .grid-cols-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .settings-section .grid-cols-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .settings-section .flex-col {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .settings-section label {
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .settings-section input[type="number"], .settings-section input[type="file"], .settings-section select, .settings-section .input-group input, .settings-section input[type="text"] {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            width: 100%;
+        }
+
+        .settings-section .input-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .settings-section select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="%23f9aa33" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: left 0.5rem top 50%;
+            background-size: 1.5rem auto;
+            padding-left: 2.5rem;
+            text-align: right;
+        }
+
+        .settings-section input[type="file"] {
+            cursor: pointer;
+        }
+
+        .settings-section .file-label {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .settings-section .file-label:hover {
+            background-color: #e69524;
+            transform: translateY(-2px);
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .gallery-item {
+            aspect-ratio: 1/1;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: var(--transition);
+            border: 2px solid transparent;
+            position: relative;
+            background: #333;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .gallery-item:hover, .gallery-item.active {
+            opacity: 1;
+            transform: scale(1.08);
+            border-color: var(--secondary-color);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+            z-index: 2;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .settings-panel .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .settings-panel .button-group button {
+            background: var(--secondary-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .settings-panel .button-group button:hover {
+            background-color: #e69524;
+            transform: translateY(-2px);
+        }
+
+        .warning-message {
+            background-color: #f9aa33;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            animation: fadeInOut 3s forwards;
+            display: none;
+            white-space: nowrap;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; top: 80px; }
+            10% { opacity: 1; top: 100px; }
+            90% { opacity: 1; top: 100px; }
+            100% { opacity: 0; top: 80px; }
+        }
+
+        .fullscreen-btn {
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.15);
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .fullscreen-btn:hover {
+            background: rgba(0,0,0,0.6);
+            transform: scale(1.1);
+        }
+
+        /* Youtube Search Styling */
+        .youtube-search-container {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .youtube-search-container .search-input-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .youtube-search-container .search-input-group input {
+            flex-grow: 1;
+        }
+
+        .youtube-search-container .search-input-group button {
+            background: var(--secondary-color);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .youtube-results {
+            max-height: 250px;
+            overflow-y: auto;
+            display: grid;
+            gap: 15px;
+        }
+
+        .youtube-results-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .youtube-results-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .youtube-results-item img {
+            width: 100px;
+            height: 75px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .youtube-results-item h4 {
+            font-size: 1rem;
+            line-height: 1.4;
+            flex-grow: 1;
+        }
+        
+        #youtube-player-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 800px;
+            height: auto;
+            aspect-ratio: 16 / 9;
+            z-index: 50;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .youtube-player-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .youtube-player-controls button {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .youtube-player-controls button:hover {
+            background-color: #e69524;
+            transform: translateY(-2px);
+        }
+
+        #youtube-player {
+            width: 100%;
+            height: 100%;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* Mini-player styling */
+        #mini-player-container {
+            position: fixed;
+            bottom: 20px;
+            right: 10px;
+            z-index: 100;
+            width: 250px; /* Reverted to fixed width */
+            height: 50px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 5px;
+            display: flex; /* Flex container to control children layout */
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.5s ease;
+        }
+
+        /* Problem 1: Visibility State Management Conflict - Solution Protocol: CSS Refactor */
+        #mini-player-container.hidden {
+            transform: translateX(200%);
+        }
+
+        #mini-player-thumbnail {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        
+        /* Problem 2: Component Layout Regression - Solution Protocol: CSS Adaptation */
+        .mini-player-info {
+            display: flex;
+            align-items: center;
+            flex-grow: 1; /* Key change: This makes the div expand to fill the space */
+            overflow: hidden; 
+        }
+        
+        #mini-player-title {
+            font-size: 0.8rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-right: 8px; /* Added padding to separate from the button */
+        }
+
+        #mini-player-toggle-btn {
+            background: none;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1rem;
+            color: var(--secondary-color);
+            flex-shrink: 0;
+        }
+
+        #mini-player-toggle-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        @media (max-width: 768px) {
+            .timer-display {
+                font-size: 3.5rem;
+            }
+            .timer-status {
+                font-size: 1.2rem;
+            }
+            .settings-panel {
+                width: 90%;
+                right: 5%;
+                left: 5%;
+                top: 80px;
+            }
+            .gallery {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .datetime-container {
+                left: 10px;
+                bottom: 10px;
+                font-size: 0.8rem;
+            }
+            .datetime-container .time {
+                font-size: 2rem;
+            }
+            .settings-btn {
+                top: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+            }
+            .youtube-results-item {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            .youtube-results-item img {
+                width: 100%;
+                height: auto;
+            }
+
+            #mini-player-container {
+                width: 90%;
+                max-width: 250px;
+                left: 50%;
+                transform: translateX(-50%);
+                bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container" id="main-content">
+        <div class="overlay"></div>
+        
+        <!-- الساعة والتاريخ -->
+        <div class="datetime-container styled-container" id="datetime-container">
+            <div class="time" id="current-time">00:00:00</div>
+            <div class="date" id="current-date">السبت, 1 يناير</div>
+        </div>
+        
+        <!-- المؤقت -->
+        <div class="timer-container styled-container" id="timer-container">
+            <div class="timer-display" id="timer-display">00:00</div>
+            <div class="timer-status" id="timer-status">جاهز للبدء</div>
+            <div class="timer-buttons" id="timer-buttons">
+                <button id="start-btn"><i class="fas fa-play"></i> ابدأ</button>
+                <button id="reset-btn"><i class="fas fa-sync-alt"></i> إعادة تعيين</button>
+            </div>
+        </div>
+
+        <!-- إعدادات -->
+        <div class="settings-btn" id="settings-btn">
+            <i class="fas fa-cog"></i>
+        </div>
+        
+        <div class="settings-panel" id="settings-panel">
+            <h2><i class="fas fa-sliders-h"></i> إعدادات الدراسة</h2>
+            
+            <!-- إعدادات المؤقت -->
+            <div class="settings-section">
+                <h3><i class="fas fa-clock"></i> تخصيص المؤقت</h3>
+                <div class="button-group">
+                    <button id="pomodoro-btn">بومودورو (25/5)</button>
+                    <button id="focused-btn">مركز (50/10)</button>
+                </div>
+                <div class="grid-cols-2 mt-5">
+                    <div class="flex-col">
+                        <label for="study-hours">دراسة (ساعات)</label>
+                        <input type="number" id="study-hours" value="0" min="0">
+                    </div>
+                    <div class="flex-col">
+                        <label for="study-minutes">دراسة (دقائق)</label>
+                        <input type="number" id="study-minutes" value="25" min="1">
+                    </div>
+                    <div class="flex-col">
+                        <label for="break-hours">راحة (ساعات)</label>
+                        <input type="number" id="break-hours" value="0" min="0">
+                    </div>
+                    <div class="flex-col">
+                        <label for="break-minutes">راحة (دقائق)</label>
+                        <input type="number" id="break-minutes" value="5" min="1">
+                    </div>
+                </div>
+                <!-- حقل الفترة المتقطعة -->
+                <div class="flex-col mt-5">
+                    <label for="break-frequency">راحة بعد كل (دقائق)</label>
+                    <input type="number" id="break-frequency" value="60" min="1">
+                </div>
+
+                <div class="button-group">
+                    <button id="save-timer-btn"><i class="fas fa-save"></i> حفظ</button>
+                </div>
+            </div>
+
+            <!-- إحصائيات الجلسات -->
+            <div class="settings-section">
+                <h3><i class="fas fa-chart-line"></i> إحصائيات الجلسات</h3>
+                <div class="grid-cols-2">
+                    <div class="flex-col">
+                        <label>إجمالي الدراسة</label>
+                        <div id="total-study-time" class="p-2 bg-gray-800 rounded-lg text-lg text-center">00h 00m</div>
+                    </div>
+                    <div class="flex-col">
+                        <label>إجمالي الراحة</label>
+                        <div id="total-break-time" class="p-2 bg-gray-800 rounded-lg text-lg text-center">00h 00m</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- قسم بحث يوتيوب الجديد -->
+            <div class="settings-section youtube-search-container">
+                <h3><i class="fab fa-youtube"></i> بحث يوتيوب</h3>
+                <div class="search-input-group">
+                    <input type="text" id="youtube-search-input" placeholder="ابحث عن مقاطع فيديو..." class="text-white">
+                    <button id="youtube-search-btn"><i class="fas fa-search"></i></button>
+                </div>
+                <div id="youtube-results" class="youtube-results">
+                    <!-- سيتم ملء النتائج هنا -->
+                </div>
+                <div class="button-group">
+                    <button id="show-youtube-player-btn" class="bg-gray-700 text-white py-2 px-4 rounded-full w-full transition-colors hover:bg-gray-600 hidden">
+                        <i class="fas fa-eye ml-2"></i> إظهار المشغل
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mini-player controls -->
+            <div class="settings-section">
+                <h3><i class="fas fa-tv"></i> المشغل الصغير</h3>
+                <div class="button-group">
+                    <button id="show-mini-player-btn">إظهار المشغل</button>
+                    <button id="hide-mini-player-btn">إخفاء المشغل</button>
+                </div>
+            </div>
+            
+            <!-- إعدادات الخلفية -->
+            <div class="settings-section">
+                <h3><i class="fas fa-images"></i> مكتبة الخلفيات</h3>
+                <div class="gallery" id="background-gallery">
+                    <!-- سيتم ملؤها بواسطة JavaScript -->
+                </div>
+                <div class="flex-col mt-5">
+                    <button id="refresh-backgrounds-btn" class="bg-gray-700 text-white py-2 px-4 rounded-full w-full transition-colors hover:bg-gray-600"><i class="fas fa-sync-alt ml-2"></i> تحديث الصور</button>
+                </div>
+            </div>
+
+            <!-- إعدادات ملء الشاشة -->
+            <div class="settings-section">
+                <h3><i class="fas fa-expand"></i> وضع ملء الشاشة</h3>
+                <div class="button-group">
+                    <button id="fullscreen-btn" class="fullscreen-btn bg-gray-700 text-white py-2 px-4 rounded-full w-full transition-colors hover:bg-gray-600">
+                        <i class="fas fa-expand ml-2"></i> تفعيل ملء الشاشة
+                    </button>
+                </div>
+            </div>
+            
+            <!-- إعدادات الواجهة -->
+            <div class="settings-section">
+                <h3><i class="fas fa-eye"></i> خيارات العرض</h3>
+                <div class="settings-toggle">
+                    <label for="datetime-toggle">إخفاء/إظهار الوقت والتاريخ</label>
+                    <input type="checkbox" id="datetime-toggle" checked>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- مشغل يوتيوب -->
+    <div id="youtube-player-container">
+        <iframe id="youtube-player" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <div class="youtube-player-controls">
+            <button id="hide-youtube-player-btn"><i class="fas fa-eye-slash ml-2"></i> إخفاء الفيديو مع استمرار التشغيل</button>
+        </div>
+    </div>
+
+    <!-- Mini-player -->
+    <!-- Problem 1: Visibility State Management Conflict - Solution Protocol: HTML State Initialization -->
+    <!-- Problem 2: Component Layout Regression - Solution Protocol: HTML Restructuring -->
+    <div id="mini-player-container" class="hidden">
+        <img id="mini-player-thumbnail" src="" alt="Video Thumbnail">
+        
+        <div class="mini-player-info">
+            <span id="mini-player-title"></span>
+        </div>
+
+        <button id="mini-player-toggle-btn">
+            <i id="mini-player-icon" class="fas fa-play"></i>
+        </button>
+    </div>
+
+    <div class="warning-message" id="warning-message"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // ** العناصر الأساسية في الواجهة **
+        const mainContent = document.getElementById('main-content');
+        const currentTimeEl = document.getElementById('current-time');
+        const currentDateEl = document.getElementById('current-date');
+        const settingsBtn = document.getElementById('settings-btn');
+        const settingsPanel = document.getElementById('settings-panel');
+        const warningMessage = document.getElementById('warning-message');
+        const timerContainer = document.getElementById('timer-container');
+        const datetimeContainer = document.getElementById('datetime-container');
+        const timerDisplay = document.getElementById('timer-display');
+        const timerStatus = document.getElementById('timer-status');
+        const startBtn = document.getElementById('start-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const studyHoursInput = document.getElementById('study-hours');
+        const studyMinutesInput = document.getElementById('study-minutes');
+        const breakHoursInput = document.getElementById('break-hours');
+        const breakMinutesInput = document.getElementById('break-minutes');
+        const breakFrequencyInput = document.getElementById('break-frequency');
+        const saveTimerBtn = document.getElementById('save-timer-btn');
+        const pomodoroBtn = document.getElementById('pomodoro-btn');
+        const focusedBtn = document.getElementById('focused-btn');
+        const totalStudyTimeEl = document.getElementById('total-study-time');
+        const totalBreakTimeEl = document.getElementById('total-break-time');
+        const backgroundGallery = document.getElementById('background-gallery');
+        const datetimeToggle = document.getElementById('datetime-toggle');
+        const refreshBackgroundsBtn = document.getElementById('refresh-backgrounds-btn');
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
+        
+        // عناصر يوتيوب
+        const youtubeSearchInput = document.getElementById('youtube-search-input');
+        const youtubeSearchBtn = document.getElementById('youtube-search-btn');
+        const youtubeResults = document.getElementById('youtube-results');
+        const youtubePlayerContainer = document.getElementById('youtube-player-container');
+        const youtubePlayer = document.getElementById('youtube-player');
+        const hideYoutubePlayerBtn = document.getElementById('hide-youtube-player-btn');
+        const showYoutubePlayerBtn = document.getElementById('show-youtube-player-btn');
+
+        // New Mini-player elements
+        const miniPlayerContainer = document.getElementById('mini-player-container');
+        const miniPlayerThumbnail = document.getElementById('mini-player-thumbnail');
+        const miniPlayerTitle = document.getElementById('mini-player-title');
+        const miniPlayerToggleBtn = document.getElementById('mini-player-toggle-btn');
+        const miniPlayerIcon = document.getElementById('mini-player-icon');
+
+        // New mini-player control buttons
+        const showMiniPlayerBtn = document.getElementById('show-mini-player-btn');
+        const hideMiniPlayerBtn = document.getElementById('hide-mini-player-btn');
+
+        // ** متغيرات حالة التطبيق **
+        let timer;
+        let isStudySession = true;
+        let studyDuration = (parseInt(studyHoursInput.value) * 3600) + (parseInt(studyMinutesInput.value) * 60);
+        let breakDuration = (parseInt(breakHoursInput.value) * 3600) + (parseInt(breakMinutesInput.value) * 60);
+        let timeLeft = studyDuration;
+        let isPaused = true;
+        let currentBgIndex = 0;
+        let totalStudyTime = parseInt(localStorage.getItem('totalStudyTime')) || 0;
+        let totalBreakTime = parseInt(localStorage.getItem('totalBreakTime')) || 0;
+        let breakFrequency = parseInt(breakFrequencyInput.value) * 60;
+        let studyTimeSinceLastBreak = 0;
+        let backgroundSources = [];
+        let remainingStudyTime = studyDuration; // متغير جديد لحفظ الوقت المتبقي من الجلسة الطويلة
+        let db;
+        let auth;
+        let userId;
+        let youtubeApiKey = null; // Default to null
+        let youtubeSearchCount = 0;
+        let youtubeDocRef;
+        let isVideoPlaying = false;
+
+        // Screen Wake Lock API Variables and Functions
+        let screenWakeLock = null;
+
+        // دالة لطلب إبقاء الشاشة نشطة
+        const requestWakeLock = async () => {
+            try {
+                if ('wakeLock' in navigator) {
+                    screenWakeLock = await navigator.wakeLock.request('screen');
+                    console.log('Screen Wake Lock is active');
+                }
+            } catch (err) {
+                console.error(`Failed to acquire wake lock: ${err.name}, ${err.message}`);
+            }
+        };
+
+        // دالة لإلغاء طلب إبقاء الشاشة نشطة
+        const releaseWakeLock = async () => {
+            if (screenWakeLock !== null) {
+                try {
+                    await screenWakeLock.release();
+                    screenWakeLock = null;
+                    console.log('Screen Wake Lock released');
+                } catch (err) {
+                    console.error(`Failed to release wake lock: ${err.name}, ${err.message}`);
+                }
+            }
+        };
+
+        // دالة للتعامل مع تغيير حالة علامات التبويب
+        const handleVisibilityChange = async () => {
+            if (!isPaused && document.visibilityState === 'visible') {
+                await requestWakeLock();
+            }
+        };
+
+        // ** وظائف الواجهة والتفاعلات **
+
+        // عرض رسالة تحذير مؤقتة
+        function showWarning(message) {
+            if (warningMessage) {
+                warningMessage.textContent = message;
+                warningMessage.style.display = 'block';
+                setTimeout(() => {
+                    warningMessage.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        // جلب الصور من Pexels API
+        async function fetchPexelsPhotos() {
+            const PEXELS_API_KEY = "y9VvhRdxHq1VxChQlpnbvjYVZkCHqeQ3MPmn7jSkcKebEDb1FkOqFpPx";
+            const queries = ["calm nature no people", "peaceful forest desktop wallpaper", "minimalist landscape", "tranquil scenery", "calm forest"];
+            const randomQuery = queries[Math.floor(Math.random() * queries.length)];
+            const url = `https://api.pexels.com/v1/search?query=${randomQuery}&per_page=20&orientation=landscape`;
+
+            try {
+                showWarning('جارٍ تحميل خلفيات جديدة...');
+                const response = await fetch(url, {
+                    headers: {
+                        Authorization: PEXELS_API_KEY
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error(`Pexels API request failed with status: ${response.status}`);
+                }
+                const data = await response.json();
+                if (data.photos && data.photos.length > 0) {
+                    backgroundSources = data.photos.map(photo => ({
+                        full: photo.src.large2x || photo.src.large,
+                        thumbnail: photo.src.small
+                    }));
+                    localStorage.setItem('backgroundSources', JSON.stringify(backgroundSources));
+                    initGallery();
+                    loadRandomBackground();
+                    showWarning('تم تحديث صور الخلفيات بنجاح!');
+                } else {
+                    showWarning('لم يتم العثور على صور جديدة. يرجى المحاولة مرة أخرى لاحقًا.');
+                }
+            } catch (error) {
+                console.error('Error fetching Pexels images:', error);
+                showWarning('فشل تحميل الصور من Pexels. قد يكون هناك مشكلة في الاتصال أو المفتاح.');
+                backgroundSources = [
+                    {full: 'https://images.pexels.com/photos/1037992/pexels-photo-1037992.jpeg?auto=compress&cs=tinysrgb&w=1920&dpr=1', thumbnail: 'https://images.pexels.com/photos/1037992/pexels-photo-1037992.jpeg?auto=compress&cs=tinysrgb&h=130'},
+                    {full: 'https://images.pexels.com/photos/1563256/pexels-photo-1563256.jpeg?auto=compress&cs=tinysrgb&w=1920&dpr=1', thumbnail: 'https://images.pexels.com/photos/1563256/pexels-photo-1563256.jpeg?auto=compress&cs=tinysrgb&h=130'},
+                    {full: 'https://images.pexels.com/photos/1367192/pexels-photo-1367192.jpeg?auto=compress&cs=tinysrgb&w=1920&dpr=1', thumbnail: 'https://images.pexels.com/photos/1367192/pexels-photo-1367192.jpeg?auto=compress&cs=tinysrgb&h=130'},
+                    {full: 'https://images.pexels.com/photos/176851/pexels-photo-176851.jpeg?auto=compress&cs=tinysrgb&w=1920&dpr=1', thumbnail: 'https://images.pexels.com/photos/176851/pexels-photo-176851.jpeg?auto=compress&cs=tinysrgb&h=130'}
+                ];
+                initGallery();
+                loadRandomBackground();
+            }
+        }
+
+        // تهيئة التطبيق عند التحميل
+        function initApp() {
+            setupEventListeners();
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+            loadSettings();
+            
+            const cachedSources = localStorage.getItem('backgroundSources');
+            if (cachedSources) {
+                backgroundSources = JSON.parse(cachedSources);
+                initGallery();
+                loadRandomBackground();
+            } else {
+                fetchPexelsPhotos();
+            }
+
+            updateTimerDisplay();
+            updateTotalTimeDisplay();
+
+            // Initial state of mini-player buttons
+            showMiniPlayerBtn.disabled = true;
+            hideMiniPlayerBtn.disabled = true;
+        }
+
+        // تحميل الإعدادات المحفوظة من التخزين المحلي
+        function loadSettings() {
+             const settings = JSON.parse(localStorage.getItem('timerSettings'));
+             if (settings) {
+                studyHoursInput.value = settings.studyHours;
+                studyMinutesInput.value = settings.studyMinutes;
+                breakHoursInput.value = settings.breakHours;
+                breakMinutesInput.value = settings.breakMinutes;
+                breakFrequencyInput.value = settings.breakFrequency;
+                datetimeToggle.checked = settings.datetimeEnabled;
+                updateDatetimeVisibility();
+                saveTimerSettings(false);
+             }
+        }
+
+        // حفظ الإعدادات في التخزين المحلي
+        function saveSettings() {
+             const settings = {
+                studyHours: parseInt(studyHoursInput.value),
+                studyMinutes: parseInt(studyMinutesInput.value),
+                breakHours: parseInt(breakHoursInput.value),
+                breakMinutes: parseInt(breakMinutesInput.value),
+                breakFrequency: parseInt(breakFrequencyInput.value),
+                datetimeEnabled: datetimeToggle.checked
+             };
+             localStorage.setItem('timerSettings', JSON.stringify(settings));
+        }
+
+        // تحديث حالة عرض الوقت والتاريخ بناءً على الإعدادات
+        function updateDatetimeVisibility() {
+            if (datetimeToggle.checked) {
+                datetimeContainer.classList.remove('hidden');
+            } else {
+                datetimeContainer.classList.add('hidden');
+            }
+        }
+
+        // تحديث الوقت والتاريخ
+        function updateDateTime() {
+            const now = new Date();
+            const timeOptions = { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true };
+            const dateOptions = { weekday: 'long', day: 'numeric', month: 'long' };
+            
+            currentTimeEl.textContent = now.toLocaleTimeString('ar-EG', timeOptions);
+            currentDateEl.textContent = now.toLocaleDateString('ar-EG', dateOptions);
+        }
+
+        // تحميل صورة خلفية عشوائية من المكتبة
+        function loadRandomBackground() {
+            if (backgroundSources.length === 0) {
+                document.body.style.backgroundImage = 'none';
+                document.body.style.backgroundColor = '#2c3e50';
+                return;
+            }
+            
+            const randomIndex = Math.floor(Math.random() * backgroundSources.length);
+            const imageUrl = backgroundSources[randomIndex].full;
+            
+            const img = new Image();
+            img.onload = () => {
+                document.body.style.backgroundImage = `url('${imageUrl}')`;
+                currentBgIndex = randomIndex;
+                updateActiveThumbnail();
+            };
+            img.onerror = () => {
+                console.error('فشل تحميل الصورة:', imageUrl);
+                showWarning('فشل تحميل الصورة المحددة. سيتم استخدام خلفية افتراضية.');
+                document.body.style.backgroundImage = 'none';
+                document.body.style.backgroundColor = '#2c3e50';
+            };
+            img.src = imageUrl;
+        }
+        
+        // تهيئة معرض الصور المصغرة
+        function initGallery() {
+            backgroundGallery.innerHTML = '';
+            backgroundSources.forEach((source, index) => {
+                const galleryItem = document.createElement('div');
+                galleryItem.className = 'gallery-item';
+                galleryItem.dataset.index = index;
+
+                const img = document.createElement('img');
+                img.src = source.thumbnail;
+                img.alt = `خلفية ${index + 1}`;
+                img.loading = "lazy";
+                
+                galleryItem.appendChild(img);
+                backgroundGallery.appendChild(galleryItem);
+            });
+            
+            updateActiveThumbnail();
+        }
+        
+        // تحديث الصورة المصغرة النشطة في المعرض
+        function updateActiveThumbnail() {
+            document.querySelectorAll('.gallery-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            const activeItem = document.querySelector(`.gallery-item[data-index="${currentBgIndex}"]`);
+            if (activeItem) {
+                activeItem.classList.add('active');
+            }
+        }
+        
+        // تنسيق الوقت
+        function formatTime(seconds) {
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = seconds % 60;
+            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+        
+        // تحديث عرض المؤقت
+        function updateTimerDisplay() {
+            timerDisplay.textContent = formatTime(timeLeft);
+        }
+
+        // تحديث عرض إحصائيات الوقت الإجمالي
+        function updateTotalTimeDisplay() {
+            const studyHours = Math.floor(totalStudyTime / 3600);
+            const studyMinutes = Math.floor((totalStudyTime % 3600) / 60);
+            const breakHours = Math.floor(totalBreakTime / 3600);
+            const breakMinutes = Math.floor((totalBreakTime % 3600) / 60);
+
+            totalStudyTimeEl.textContent = `${studyHours.toString().padStart(2, '0')}h ${studyMinutes.toString().padStart(2, '0')}m`;
+            totalBreakTimeEl.textContent = `${breakHours.toString().padStart(2, '0')}h ${breakMinutes.toString().padStart(2, '0')}m`;
+        }
+
+        // حفظ الإحصائيات في التخزين المحلي
+        function updateStatsInDB() {
+            localStorage.setItem('totalStudyTime', totalStudyTime);
+            localStorage.setItem('totalBreakTime', totalBreakTime);
+            updateTotalTimeDisplay();
+        }
+        
+        // بدء المؤقت
+        function startTimer() {
+            if (!isPaused) return;
+            isPaused = false;
+            
+            // طلب قفل الشاشة عند بدء الجلسة
+            if (isStudySession && 'wakeLock' in navigator) {
+                navigator.wakeLock.request('screen')
+                    .then(lock => {
+                        screenWakeLock = lock;
+                        console.log('Screen Wake Lock is active');
+                    })
+                    .catch(err => {
+                        console.error(`Failed to acquire wake lock: ${err.name}, ${err.message}`);
+                    });
+            }
+            
+            if (settingsBtn) settingsBtn.classList.add('hidden');
+            if (settingsPanel) settingsPanel.classList.remove('active');
+            if (timerContainer) timerContainer.classList.add('no-bg');
+            if (datetimeContainer) datetimeContainer.classList.add('no-bg'); 
+            if (timerContainer) timerContainer.classList.add('hidden-controls');
+            
+            timerStatus.textContent = isStudySession ? 'جلسة دراسة' : 'جلسة راحة';
+
+            timer = setInterval(() => {
+                timeLeft--;
+                if (isStudySession) {
+                    totalStudyTime++;
+                    studyTimeSinceLastBreak++;
+                } else {
+                    totalBreakTime++;
+                }
+
+                updateTimerDisplay();
+
+                if (isStudySession && breakFrequency > 0 && studyTimeSinceLastBreak > 0 && (studyTimeSinceLastBreak % breakFrequency) === 0) {
+                    clearInterval(timer);
+                    updateStatsInDB();
+                    remainingStudyTime = timeLeft; // حفظ الوقت المتبقي
+                    isStudySession = false;
+                    timeLeft = breakDuration;
+                    updateTimerDisplay();
+
+                    // تحرير قفل الشاشة عند انتهاء الجلسة وبدء الراحة
+                    if (screenWakeLock !== null) {
+                        screenWakeLock.release();
+                        screenWakeLock = null;
+                        console.log('Screen Wake Lock released');
+                    }
+                    
+                    isPaused = true;
+                    if (settingsBtn) settingsBtn.classList.remove('hidden');
+                    if (timerContainer) timerContainer.classList.remove('hidden-controls');
+                    if (timerContainer) timerContainer.classList.remove('no-bg');
+                    if (datetimeContainer) datetimeContainer.classList.remove('no-bg');
+                    
+                    timerStatus.textContent = 'جاهز للبدء';
+                    showWarning('حان وقت الراحة القصيرة!');
+                } else if (timeLeft < 0) {
+                    clearInterval(timer);
+                    updateStatsInDB();
+                    isStudySession = !isStudySession;
+                    timeLeft = isStudySession ? remainingStudyTime : breakDuration; // استئناف من الوقت المحفوظ
+                    if (!isStudySession) {
+                        timeLeft = breakDuration;
+                    }
+                    updateTimerDisplay();
+
+                    // تحرير قفل الشاشة عند انتهاء الجلسة
+                    if (screenWakeLock !== null) {
+                        screenWakeLock.release();
+                        screenWakeLock = null;
+                        console.log('Screen Wake Lock released');
+                    }
+                    
+                    isPaused = true;
+                    if (settingsBtn) settingsBtn.classList.remove('hidden');
+                    if (timerContainer) timerContainer.classList.remove('hidden-controls');
+                    if (timerContainer) timerContainer.classList.remove('no-bg');
+                    if (datetimeContainer) datetimeContainer.classList.remove('no-bg');
+                    
+                    if (isStudySession) {
+                        timerStatus.textContent = 'جاهز للبدء';
+                        studyTimeSinceLastBreak = 0;
+                    } else {
+                        timerStatus.textContent = 'جاهز للبدء';
+                    }
+                    showWarning('انتهت الجلسة. انقر للبدء!');
+                }
+            }, 1000);
+        }
+        
+        // إيقاف المؤقت مؤقتاً
+        function pauseTimer() {
+            isPaused = true;
+            clearInterval(timer);
+
+            // تحرير قفل الشاشة عند الإيقاف المؤقت
+            if (screenWakeLock !== null) {
+                screenWakeLock.release();
+                screenWakeLock = null;
+                console.log('Screen Wake Lock released');
+            }
+            
+            if (timerContainer) timerContainer.classList.remove('hidden-controls');
+            if (settingsBtn) settingsBtn.classList.remove('hidden');
+            if (timerContainer) timerContainer.classList.remove('no-bg');
+            if (datetimeContainer) datetimeContainer.classList.remove('no-bg');
+            updateStatsInDB();
+        }
+
+        // إعادة ضبط المؤقت
+        function resetTimer() {
+            clearInterval(timer);
+            isPaused = true;
+            isStudySession = true;
+            timeLeft = studyDuration;
+            remainingStudyTime = studyDuration; // إعادة ضبط الوقت المتبقي أيضاً
+            studyTimeSinceLastBreak = 0;
+            updateTimerDisplay();
+            timerStatus.textContent = 'جاهز للبدء';
+
+            // تحرير قفل الشاشة عند إعادة التعيين
+            if (screenWakeLock !== null) {
+                screenWakeLock.release();
+                screenWakeLock = null;
+                console.log('Screen Wake Lock released');
+            }
+
+            if (timerContainer) timerContainer.classList.remove('hidden-controls');
+            if (timerContainer) timerContainer.classList.remove('no-bg');
+            if (datetimeContainer) datetimeContainer.classList.remove('no-bg');
+            if (settingsBtn) settingsBtn.classList.remove('hidden');
+
+            // Disable mini-player buttons
+            showMiniPlayerBtn.disabled = true;
+            hideMiniPlayerBtn.disabled = true;
+        }
+        
+        // حفظ إعدادات المؤقت
+        function saveTimerSettings(show=true) {
+            const newStudyDuration = (parseInt(studyHoursInput.value) * 3600) + (parseInt(studyMinutesInput.value) * 60);
+            const newBreakDuration = (parseInt(breakHoursInput.value) * 3600) + (parseInt(breakMinutesInput.value) * 60);
+            const newBreakFrequency = parseInt(breakFrequencyInput.value) * 60;
+            
+            if (isNaN(newStudyDuration) || isNaN(newBreakDuration) || (newStudyDuration + newBreakDuration) <= 0 || isNaN(newBreakFrequency) || newBreakFrequency <= 0) {
+                showWarning('الرجاء إدخال أرقام صحيحة للوقت.');
+                return;
+            }
+            
+            studyDuration = newStudyDuration;
+            breakDuration = newBreakDuration;
+            breakFrequency = newBreakFrequency;
+            resetTimer();
+            saveSettings();
+            if (show) showWarning('تم حفظ إعدادات المؤقت بنجاح.');
+            
+            if (settingsPanel) settingsPanel.classList.remove('active');
+        }
+
+        // إعداد مؤقت بومودورو الافتراضي
+        function setPomodoro() {
+            studyHoursInput.value = 0;
+            studyMinutesInput.value = 25;
+            breakHoursInput.value = 0;
+            breakMinutesInput.value = 5;
+            breakFrequencyInput.value = 25;
+            saveTimerSettings();
+        }
+
+        // إعداد مؤقت التركيز الافتراضي
+        function setFocused() {
+            studyHoursInput.value = 0;
+            studyMinutesInput.value = 50;
+            breakHoursInput.value = 0;
+            breakMinutesInput.value = 10;
+            breakFrequencyInput.value = 50;
+            saveTimerSettings();
+        }
+
+        // تفعيل أو إلغاء وضع ملء الشاشة
+        function toggleFullscreen() {
+            const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+
+            if (!isFullscreen) {
+                const element = document.documentElement;
+                if (element.requestFullscreen) {
+                    element.requestFullscreen();
+                } else if (element.mozRequestFullScreen) { // Firefox
+                    element.mozRequestFullScreen();
+                } else if (element.webkitRequestFullscreen) { // Chrome, Safari and Opera
+                    element.webkitRequestFullscreen();
+                } else if (element.msRequestFullscreen) { // IE/Edge
+                    element.msRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.mozCancelFullScreen) { // Firefox
+                    document.mozCancelFullScreen();
+                } else if (document.webkitExitFullscreen) { // Chrome, Safari and Opera
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) { // IE/Edge
+                    document.msExitFullscreen();
+                }
+            }
+        }
+        
+        // معالجة تغييرات وضع ملء الشاشة
+        function handleFullscreenChange() {
+            const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+            if (isFullscreen) {
+                fullscreenBtn.innerHTML = '<i class="fas fa-compress ml-2"></i> إيقاف ملء الشاشة';
+                settingsBtn.classList.add('hidden');
+                datetimeContainer.classList.add('hidden');
+            } else {
+                fullscreenBtn.innerHTML = '<i class="fas fa-expand ml-2"></i> تفعيل ملء الشاشة';
+                settingsBtn.classList.remove('hidden');
+                datetimeContainer.classList.remove('hidden');
+            }
+        }
+
+        // وظائف يوتيوب
+        async function searchYouTube() {
+            const query = youtubeSearchInput.value;
+            if (query.trim() === "") {
+                showWarning("الرجاء إدخال كلمة للبحث.");
+                return;
+            }
+
+            if (!youtubeApiKey) {
+                showWarning("خطأ: لم يتم العثور على مفتاح API لـ YouTube. الرجاء إدخال المفتاح في لوحة التحكم.");
+                return;
+            }
+
+            youtubeResults.innerHTML = '<div class="text-center mt-4">جارٍ البحث...</div>';
+
+            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&key=${youtubeApiKey}&type=video&maxResults=10`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.items && data.items.length > 0) {
+                    displayYouTubeResults(data.items);
+                    updateSearchCount();
+                } else {
+                    youtubeResults.innerHTML = '<div class="text-center mt-4 opacity-70">لم يتم العثور على نتائج.</div>';
+                }
+            } catch (error) {
+                console.error('Error fetching YouTube videos:', error);
+                youtubeResults.innerHTML = '<div class="text-center mt-4 text-red-400">حدث خطأ أثناء البحث.</div>';
+            }
+        }
+
+        async function updateSearchCount() {
+            if (youtubeDocRef) {
+                try {
+                    const docSnap = await getDoc(youtubeDocRef);
+                    let newSearchCount = 1;
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        newSearchCount = (data.searchCount || 0) + 1;
+                    }
+                    await setDoc(youtubeDocRef, { searchCount: newSearchCount, lastUpdated: new Date() }, { merge: true });
+                } catch (e) {
+                    console.error("Error updating search count: ", e);
+                }
+            }
+        }
+        
+        function displayYouTubeResults(videos) {
+            youtubeResults.innerHTML = '';
+            videos.forEach(video => {
+                const videoItem = document.createElement('div');
+                videoItem.className = 'youtube-results-item';
+                videoItem.dataset.videoId = video.id.videoId;
+                videoItem.dataset.videoTitle = video.snippet.title;
+                videoItem.dataset.videoThumbnail = video.snippet.thumbnails.default.url;
+
+                const thumbnail = document.createElement('img');
+                thumbnail.src = video.snippet.thumbnails.default.url;
+                thumbnail.alt = video.snippet.title;
+
+                const title = document.createElement('h4');
+                title.textContent = video.snippet.title;
+                
+                videoItem.appendChild(thumbnail);
+                videoItem.appendChild(title);
+                youtubeResults.appendChild(videoItem);
+            });
+        }
+        
+        function playYouTubeVideo(videoId, videoTitle, videoThumbnail) {
+            youtubePlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1`;
+            youtubePlayerContainer.style.display = 'flex';
+            showYoutubePlayerBtn.classList.remove('hidden');
+            settingsPanel.classList.remove('active');
+            
+            // Update mini-player state
+            miniPlayerThumbnail.src = videoThumbnail;
+            const words = videoTitle.split(' ');
+            const truncatedTitle = words.slice(0, 2).join(' ');
+            miniPlayerTitle.textContent = words.length > 2 ? truncatedTitle + '...' : truncatedTitle;
+            
+            // Problem 1: Visibility State Management Conflict - Solution Protocol: JavaScript Unification
+            miniPlayerContainer.classList.remove('hidden');
+            
+            isVideoPlaying = true;
+            miniPlayerIcon.classList.remove('fa-play');
+            miniPlayerIcon.classList.add('fa-pause');
+
+            // Enable mini-player control buttons
+            showMiniPlayerBtn.disabled = false;
+            hideMiniPlayerBtn.disabled = false;
+        }
+
+        function hideYouTubePlayer() {
+            youtubePlayerContainer.style.display = 'none';
+        }
+        
+        function showYouTubePlayer() {
+            youtubePlayerContainer.style.display = 'flex';
+            settingsPanel.classList.remove('active');
+        }
+        
+        function toggleMiniPlayerPlayback() {
+            if (isVideoPlaying) {
+                youtubePlayer.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+                isVideoPlaying = false;
+                miniPlayerIcon.classList.remove('fa-pause');
+                miniPlayerIcon.classList.add('fa-play');
+            } else {
+                youtubePlayer.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+                isVideoPlaying = true;
+                miniPlayerIcon.classList.remove('fa-play');
+                miniPlayerIcon.classList.add('fa-pause');
+            }
+        }
+        
+        // Listen for YouTube player state changes to sync mini-player state
+        function onYouTubePlayerStateChange(event) {
+            // Player state: -1 (unstarted), 0 (ended), 1 (playing), 2 (paused), 3 (buffering), 5 (video cued)
+            const playerState = event.data;
+            if (playerState === 1) { // Playing
+                isVideoPlaying = true;
+                miniPlayerIcon.classList.remove('fa-play');
+                miniPlayerIcon.classList.add('fa-pause');
+            } else if (playerState === 2 || playerState === 0) { // Paused or Ended
+                isVideoPlaying = false;
+                miniPlayerIcon.classList.remove('fa-pause');
+                miniPlayerIcon.classList.add('fa-play');
+            }
+        }
+        
+        // Add listener for YouTube iframe messages
+        window.addEventListener('message', (event) => {
+            if (event.origin !== 'https://www.youtube.com' || typeof event.data !== 'string') return;
+            try {
+                const data = JSON.parse(event.data);
+                if (data.event === 'infoDelivery' && data.info) {
+                    onYouTubePlayerStateChange(data.info);
+                }
+            } catch (e) {
+                // Ignore non-JSON messages
+            }
+        });
+        
+
+        // إعداد جميع مستمعي الأحداث
+        function setupEventListeners() {
+            if (settingsBtn) {
+                settingsBtn.addEventListener('click', () => {
+                    if (settingsPanel) settingsPanel.classList.toggle('active');
+                });
+            }
+            document.addEventListener('click', (e) => {
+                if (settingsPanel && settingsBtn && settingsPanel.classList.contains('active') && !settingsPanel.contains(e.target) && !settingsBtn.contains(e.target)) {
+                    settingsPanel.classList.remove('active');
+                }
+            });
+            
+            if (startBtn) startBtn.addEventListener('click', startTimer);
+            if (resetBtn) resetBtn.addEventListener('click', resetTimer);
+            if (saveTimerBtn) saveTimerBtn.addEventListener('click', () => saveTimerSettings(true));
+            if (pomodoroBtn) pomodoroBtn.addEventListener('click', setPomodoro);
+            if (focusedBtn) focusedBtn.addEventListener('click', setFocused);
+            
+            if (timerDisplay) {
+                timerDisplay.addEventListener('click', () => {
+                    if (timerContainer) timerContainer.classList.toggle('hidden-controls');
+                    if (!isPaused) {
+                        pauseTimer();
+                    }
+                });
+            }
+
+            if (backgroundGallery) {
+                backgroundGallery.addEventListener('click', (e) => {
+                    const galleryItem = e.target.closest('.gallery-item');
+                    if (galleryItem) {
+                        const index = parseInt(galleryItem.dataset.index);
+                        const source = backgroundSources[index].full;
+                        
+                        const img = new Image();
+                        img.onload = () => {
+                            document.body.style.backgroundImage = `url('${source}')`;
+                            currentBgIndex = index;
+                            updateActiveThumbnail();
+                            if(settingsPanel) settingsPanel.classList.remove('active');
+                        };
+                        img.onerror = () => {
+                            showWarning('فشل تحميل الصورة. قد يكون الرابط غير صالح.');
+                        };
+                        img.src = source;
+                    }
+                });
+            }
+            
+            if (datetimeToggle) {
+                datetimeToggle.addEventListener('change', () => {
+                    updateDatetimeVisibility();
+                    saveSettings();
+                });
+            }
+            if (refreshBackgroundsBtn) {
+                refreshBackgroundsBtn.addEventListener('click', fetchPexelsPhotos);
+            }
+            if (fullscreenBtn) {
+                fullscreenBtn.addEventListener('click', toggleFullscreen);
+            }
+            document.addEventListener('fullscreenchange', handleFullscreenChange);
+            document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+            document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+            document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+            // مستمع الحدث الجديد للتحكم في قفل الشاشة عند تغيير علامة التبويب
+            document.addEventListener('visibilitychange', handleVisibilityChange);
+            
+            // مستمعي أحداث يوتيوب
+            if (youtubeSearchBtn) youtubeSearchBtn.addEventListener('click', searchYouTube);
+            if (youtubeSearchInput) youtubeSearchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    searchYouTube();
+                }
+            });
+            if (youtubeResults) {
+                youtubeResults.addEventListener('click', (e) => {
+                    const videoItem = e.target.closest('.youtube-results-item');
+                    if (videoItem) {
+                        const videoId = videoItem.dataset.videoId;
+                        const videoTitle = videoItem.dataset.videoTitle;
+                        const videoThumbnail = videoItem.dataset.videoThumbnail;
+                        playYouTubeVideo(videoId, videoTitle, videoThumbnail);
+                    }
+                });
+            }
+            if (hideYoutubePlayerBtn) hideYoutubePlayerBtn.addEventListener('click', hideYouTubePlayer);
+            if (showYoutubePlayerBtn) showYoutubePlayerBtn.addEventListener('click', showYouTubePlayer);
+            if (miniPlayerToggleBtn) miniPlayerToggleBtn.addEventListener('click', toggleMiniPlayerPlayback);
+
+            // Mini-player control buttons event listeners
+            if (showMiniPlayerBtn) showMiniPlayerBtn.addEventListener('click', () => {
+                miniPlayerContainer.classList.remove('hidden');
+            });
+            if (hideMiniPlayerBtn) hideMiniPlayerBtn.addEventListener('click', () => {
+                miniPlayerContainer.classList.add('hidden');
+            });
+        }
+
+        // تسجيل عامل الخدمة لإتاحة التطبيق دون اتصال بالإنترنت
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            });
+        }
+        
+        // ** تهيئة Firebase والاتصال بقاعدة البيانات **
+        async function initAuthAndFetchData() {
+            try {
+                const firebaseConfig = {
+                    apiKey: "AIzaSyC1E3CdapKg7j3Oq4bEBDstsoUxtI-I4oE",
+                    authDomain: "studi-e9c98.firebaseapp.com",
+                    projectId: "studi-e9c98",
+                    storageBucket: "studi-e9c98.firebasestorage.app",
+                    messagingSenderId: "259431208850",
+                    appId: "1:259431208850:web:d5a7fe80383e9e72b8134b",
+                    measurementId: "G-0C10HDY7DQ"
+                };
+
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                
+                try {
+                    const __initial_auth_token = ""; // Leave this as is.
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token.length > 0) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                    console.log("Authentication successful.");
+                } catch (e) {
+                    console.error("Authentication failed:", e);
+                    showWarning("فشل في المصادقة مع قاعدة البيانات.");
+                    return;
+                }
+
+                const appId = typeof __app_id !== 'undefined' ? __app_id : firebaseConfig.projectId;
+                const userId = auth.currentUser.uid;
+                youtubeDocRef = doc(db, 'artifacts', appId, 'users', userId, 'youtube', 'apiData');
+                
+                onSnapshot(youtubeDocRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        youtubeApiKey = data.apiKey;
+                        // تمكين زر البحث بمجرد توفر المفتاح
+                        if (youtubeApiKey) {
+                           youtubeSearchBtn.disabled = false;
+                           youtubeSearchInput.disabled = false;
+                           showWarning("تم تحديث مفتاح API بنجاح!");
+                        }
+                    } else {
+                        console.log("No API key found in database.");
+                        showWarning("لا يوجد مفتاح API. الرجاء إدخال المفتاح في لوحة التحكم.");
+                        youtubeSearchBtn.disabled = true;
+                        youtubeSearchInput.disabled = true;
+                    }
+                });
+
+            } catch (e) {
+                console.error("Firebase initialization failed:", e);
+                showWarning("فشل في الاتصال بقاعدة البيانات. قد لا يعمل البحث.");
+            }
+        }
+
+        window.onload = function () {
+            initAuthAndFetchData();
+            initApp();
+        };
+
+    </script>
+</body>
+</html>
