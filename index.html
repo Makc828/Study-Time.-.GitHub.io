@@ -942,6 +942,7 @@
                     throw new Error(`Pexels API request failed with status: ${response.status}`);
                 }
                 const data = await response.json();
+                
                 if (data.photos && data.photos.length > 0) {
                     backgroundSources = data.photos.map(photo => ({
                         full: photo.src.large2x || photo.src.large,
@@ -1643,8 +1644,7 @@
                 }
 
                 const appId = typeof __app_id !== 'undefined' ? __app_id : firebaseConfig.projectId;
-                const userId = auth.currentUser.uid;
-                youtubeDocRef = doc(db, 'artifacts', appId, 'users', userId, 'youtube', 'apiData');
+                youtubeDocRef = doc(db, 'artifacts', appId, 'youtube', 'apiData');
                 
                 onSnapshot(youtubeDocRef, (docSnap) => {
                     if (docSnap.exists()) {
